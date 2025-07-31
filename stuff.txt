@@ -1,0 +1,80 @@
+What is a system call? 
+
+File Descriptor: 
+What is a file descriptor? 
+It is an int which is an identifier for open files / terminal's stdin stdout stderr.
+It is returned by the open() system call. 
+Its used by low level IO system calls like read() , write() , close() in <unistd.h> 
+There are some standard file descriptors: 
+STDIN_FILENO : 0  FOR standard input 
+STDOUT_FILENO : 1 FOR standard output 
+STDERR_FILENO : 2 FOR standard error 
+these 3 come from the header unistd.h 
+So to read from standard input we can just  use read(0,..,..)  
+
+<unistd.h> 
+read: 
+read takes 3 params -> 1.File Descriptor                                   int 
+                       2.pointer to memory where read data will be stored  void 
+                       3.number of bytes to read                           size_t 
+
+The pointer in the second param can point to any data type as long as it has enough memory to third_params number of bytes.
+The return type of read is ssize_t ,  signed s_size.
+IF it is 0 ,then indicates  EOF.
+If it is <0 ,then some error occured while reading.
+If it is >0 , then the returned number if the number of bytes read.
+
+TCSAFLUSH: 
+Waits for output to be flushed from terminal output buffer.
+Discards input currently present  in the input buffer.
+Then apply new terminal changes.
+ 
+The data that in the ouput buffer isn't displayed until it has /n character or fflush(stdout) is called.
+In most of the environments C runtime automatically calls fflush(stdout) when the program ends normally so that any data in the stdout buffer is displayed.
+
+Terminals are by default in canonical mode where we read the input line by line. 
+To read the input byte by byte we can turn off the canonical mode.
+
+Canonical mode: Input is read line by line.
+Terminal collects the input until the user presses Enter(\n) 
+
+Control characters cannot be printed. 
+ASCII: 0-31 and 127.
+ASCII: 32-126 are printable.
+
+Ctrl-S will tell the program to stop sending sending output.
+Ctrl-Q resumes the output. 
+
+Ctrl-Z suspends the program. 
+   Sends SIGTSTP signal to the current process.
+   It stops the program from executing but does not terminate it.
+   U can resume the program using fg and bg.
+   fg will resume the last program. 
+   To check suspended programs / processes u can execute the command jobs.
+   If u want to resume a specific program then u can use fg %<value>
+   fg for foreground and bg for background.
+
+Ctrl-C terminates the program by sending SIGINT signal to the current process.
+
+ISIG controls this behaviour of Ctrl-C and Ctrl-Z and it can be turned off using ISIG flag.
+
+They are part of l-flags.
+
+Ctrl-S and Ctrl-Q behaviour can be stopped by turning off IXON flag , part of input flags.
+
+Ctrl-M prints 10 and also enter. Ctrl should be returning 13.
+Ctrl-M ascii code 13 -> \r.
+By default terminal treats \r as \n so we get 10.
+TO prevent that we can disable  input flag ICRNL.
+
+By default , in output "\n" is converted to \r\n. 
+To disable that turn off the output flag OPOST.
+\n only moves the cursor down ,\r is responsible to moving cursor to the extreme left.
+
+'\0' -> null character ,  used to terminate strings. ascii 0
+'0' -> digit 0. ascii 48
+
+When an error occurs then an errorno will be set by the C.
+perror -> It access the errorno and prints a descriptive error related to that errorno.
+          It also prints if there is any other string provided first.
+          
